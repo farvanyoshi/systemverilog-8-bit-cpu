@@ -9,20 +9,23 @@ RTL := rtl/cpu_pkg.sv $(filter-out rtl/cpu_pkg.sv,$(sort $(wildcard rtl/*.sv)))
 # Top module for `make lint`.
 TOP ?= cpu_top
 
+# Programs are programs/<name>.asm, assembled into build/prog/.
+PROGRAMS := $(patsubst programs/%.asm,%,$(wildcard programs/*.asm))
+
 # Unit testbenches are tb/tb_<name>.sv with top module tb_<name>.
 UNIT_TESTS := $(patsubst tb/tb_%.sv,%,$(filter-out tb/tb_cpu.sv,$(wildcard tb/tb_*.sv)))
 
 VFLAGS  := -Wall -Wno-DECLFILENAME --timing -Irtl
 TBFLAGS := $(VFLAGS) -Wno-UNUSEDPARAM -Wno-UNUSEDSIGNAL -Wno-WIDTH
 
-.PHONY: all lint test unit $(addprefix test-,$(UNIT_TESTS)) sim wave clean
+.PHONY: all lint test unit programs $(addprefix test-,$(UNIT_TESTS)) $(addprefix prog-,$(PROGRAMS)) sim wave clean
 
 all: test
 
 lint:
 	$(VERILATOR) --lint-only $(VFLAGS) --top-module $(TOP) $(RTL)
 
-test: unit
+test: unit programs
 
 unit: $(addprefix test-,$(UNIT_TESTS))
 
@@ -53,6 +56,15 @@ wave: SIM_ARGS += +WAVE=$(BUILD)/$(or $(PROG),wave).fst
 wave: sim
 
 $(CPU_SIM): | $(BUILD)
+
+programs: $(addprefix prog-,$(PROGRAMS))
+
+$(addprefix prog-,$(PROGRAMS)): prog-%: $(CPU_SIM) $(BUILD)/prog/%.hex $(BUILD)/prog/%.exp
+	@$(CPU_SIM) +verilator+quiet +PROG=$(BUILD)/prog/$*.hex +EXPECT=$(BUILD)/prog/$*.exp
+
+$(BUILD)/prog/%.hex $(BUILD)/prog/%.exp: programs/%.asm tools/asm.py
+	@mkdir -p $(BUILD)/prog
+	$(PYTHON) tools/asm.py $< -o $(BUILD)/prog/$*.hex -e $(BUILD)/prog/$*.exp
 
 $(BUILD):
 	mkdir -p $@
