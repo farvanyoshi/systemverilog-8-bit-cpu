@@ -15,7 +15,7 @@ UNIT_TESTS := $(patsubst tb/tb_%.sv,%,$(filter-out tb/tb_cpu.sv,$(wildcard tb/tb
 VFLAGS  := -Wall -Wno-DECLFILENAME --timing -Irtl
 TBFLAGS := $(VFLAGS) -Wno-UNUSEDPARAM -Wno-UNUSEDSIGNAL -Wno-WIDTH
 
-.PHONY: all lint test unit $(addprefix test-,$(UNIT_TESTS)) clean
+.PHONY: all lint test unit $(addprefix test-,$(UNIT_TESTS)) sim wave clean
 
 all: test
 
@@ -34,6 +34,25 @@ $(BUILD)/tb_%/sim: tb/tb_%.sv $(RTL)
 $(addprefix test-,$(UNIT_TESTS)): test-%: | $(BUILD)
 	@$(MAKE) --no-print-directory $(BUILD)/tb_$*/sim
 	@$(BUILD)/tb_$*/sim +verilator+quiet
+
+# Program-level testbench. Run a program with
+#   make sim PROG=<name>       (programs/<name>.asm, checked against its expectations)
+#   make sim HEX=<file.hex>    (raw image, no checks)
+# Add TRACE=1 for a per-instruction trace; `make wave` also writes an FST.
+CPU_SIM := $(BUILD)/tb_cpu/sim
+$(CPU_SIM): TBFLAGS += --trace-fst
+
+HEX ?= $(BUILD)/prog/$(PROG).hex
+EXP ?= $(BUILD)/prog/$(PROG).exp
+SIM_ARGS = +PROG=$(HEX) $(if $(PROG),+EXPECT=$(EXP)) $(if $(TRACE),+TRACE)
+
+sim: $(CPU_SIM) $(if $(PROG),$(HEX) $(EXP))
+	@$(CPU_SIM) +verilator+quiet $(SIM_ARGS)
+
+wave: SIM_ARGS += +WAVE=$(BUILD)/$(or $(PROG),wave).fst
+wave: sim
+
+$(CPU_SIM): | $(BUILD)
 
 $(BUILD):
 	mkdir -p $@
