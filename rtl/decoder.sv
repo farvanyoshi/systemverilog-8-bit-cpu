@@ -15,7 +15,6 @@ module decoder
       alu_op:     ALU_ADD,
       alu_b_imm:  1'b0,
       flags_we:   1'b0,
-      mem_re:     1'b0,
       mem_we:     1'b0,
       addr_sel:   ADDR_DIRECT,
       sp_inc:     1'b0,
@@ -53,7 +52,6 @@ module decoder
       OP_LDA, OP_LIA: begin
         ctrl.reg_we   = 1'b1;
         ctrl.wb_sel   = WB_MEM;
-        ctrl.mem_re   = 1'b1;
         ctrl.addr_sel = (opcode == OP_LDA) ? ADDR_DIRECT : ADDR_INDEXED;
       end
 
@@ -82,7 +80,6 @@ module decoder
       OP_POP: begin
         ctrl.reg_we   = 1'b1;
         ctrl.wb_sel   = WB_MEM;
-        ctrl.mem_re   = 1'b1;
         ctrl.addr_sel = ADDR_SP;
         ctrl.sp_inc   = 1'b1;
       end
