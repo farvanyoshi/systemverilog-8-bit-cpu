@@ -13,7 +13,7 @@ TOP ?= cpu_top
 UNIT_TESTS := $(patsubst tb/tb_%.sv,%,$(filter-out tb/tb_cpu.sv,$(wildcard tb/tb_*.sv)))
 
 VFLAGS  := -Wall -Wno-DECLFILENAME --timing -Irtl
-TBFLAGS := $(VFLAGS) -Wno-UNUSEDPARAM -Wno-UNUSEDSIGNAL
+TBFLAGS := $(VFLAGS) -Wno-UNUSEDPARAM -Wno-UNUSEDSIGNAL -Wno-WIDTH
 
 .PHONY: all lint test unit $(addprefix test-,$(UNIT_TESTS)) clean
 
