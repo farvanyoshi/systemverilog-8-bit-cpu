@@ -1,0 +1,151 @@
+ISA Instructions:
+ADD	rd, rs1, rs2		00000
+ADC	rd, rs1, rs2		00001
+SUB	rd, rs1, rs2		00010
+SBC 	rd, rs1, rs2		00011
+AND 	rd, rs1, rs2		00100
+OR		rd, rs1, rs2		00101
+XOR	rd, rs1, rs2		00110
+NOT	rd, rs1			00111
+SHL		rd, rs1, rs2		01000
+SHR		rd, rs1, rs2		01001
+ASR		rd, rs1, rs2		01010
+ROL		rd, rs1, rs2		01011
+ROR	rd, rs1, rs2		01100
+ADDI	rd, imm8		01101
+SUBI	rd, imm8		01110
+LDI 		rd, imm8		01111
+LDA		rd, addr8		10000
+SDA	rs, addr8		10001
+LIA		rd, rbase, off5	10010
+SIA		rs, rbase, off5	10011
+BRZ		rel11			10100
+BRN	rel11			10101
+BRV	rel11			10110
+ACALL	imm11			10111
+JMP	imm11			11000
+RCALL	rel11			11001
+PUSH	rs				11010
+POP	rd				11011
+RET						11100
+NOP					11101
+RESET					11110
+HALT					11111
+
+Flags: ZERO, CARRY, NEGATIVE, OVERFLOW.
+
+CONTROL UNIT OUTPUT EXPLANATION
+reg_w: register write enable
+reg_wsel: register write source select
+	00: ALU
+	01: imm
+	10: mem
+	11: X
+alu_selB: ALU second operand source select
+	0: reg
+	1: imm
+mem_r: enable memory read
+mem_w: enable memory write
+mem_addr_sel: select memory addressing mode
+	00: direct address
+	01: indirect address
+	10: stack pointer
+	11: X
+pc_w: enable pc write
+reset: reset register file
+pc_wsel: select pc write source
+	00: none (pc + 2 bytes)
+	01: base_reg + off8 (branch)
+	10: imm11 (jmp/call)
+	11: ra (ret)
+b: branch
+b_cond: branch condition
+	00: none
+	01: zero
+	10: negative
+	11: overflow
+call: whether to place val in ra
+halt: stop clock, prevent computer function
+inc_sp: increment stack pointer (pop)
+dec_sp: decrement stack pointer (push)
+nop: do nothing
+PART IX — PROGRAMMING YOUR CPU
+17. Write Tiny Assembly Programs
+
+Goal: Prove the CPU works.
+Suggested programs:
+
+Add two numbers
+
+Count from 0 to 15
+
+Compute a simple arithmetic series
+
+If you support conditional jumps: implement loops
+
+Load them into ROM and watch the CPU execute.
+
+PART X — EXTENSIONS (Optional but Fun)
+
+You can extend your mini-computer:
+
+18. Add a Stack Pointer + Subroutines
+19. Add a Flag Register + Conditional Jumps
+20. Add a small I/O system (LEDs, switches)
+21. Add interrupts
+22. Add a pipelined datapath
+23. Create a real assembler (Python) to compile your assembly language
+24. Build a tiny OS (loop + I/O + simple routines)
+
+These are extra, but very fun.
+
+⭐ Summary of the Full Project List
+Combinational
+
+Gates playground
+
+Adders
+
+Subtraction + two’s complement
+
+Logic ops
+
+ALU
+
+Full ALU (arith + logic + flags)
+
+Sequential
+
+Latches & flip-flops
+
+Registers
+
+Register file
+
+Memory
+
+RAM
+
+ROM (instruction memory)
+
+Control & Instruction Flow
+
+Program counter
+
+Instruction format
+
+Assembly encoding
+
+Instruction decoder
+
+Datapath wiring
+
+CPU
+
+Single-cycle CPU core
+
+Write and run assembly programs
+
+Extensions
+
+18–24 advanced topics
