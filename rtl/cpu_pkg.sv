@@ -110,7 +110,6 @@ package cpu_pkg;
     alu_op_e   alu_op;
     logic      alu_b_imm;   // ALU operand B is imm8 instead of port B
     logic      flags_we;
-    logic      mem_re;
     logic      mem_we;
     addr_sel_e addr_sel;
     logic      sp_inc;

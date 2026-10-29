@@ -34,7 +34,6 @@ module tb_decoder;
 
       expect_eq(op, "reg_we",   ctrl.reg_we,   int'(alu_rr || imm_arith || load || op == OP_LDI));
       expect_eq(op, "flags_we", ctrl.flags_we, int'(alu_rr || imm_arith));
-      expect_eq(op, "mem_re",   ctrl.mem_re,   int'(load));
       expect_eq(op, "mem_we",   ctrl.mem_we,   int'(store));
       expect_eq(op, "rb_is_rd", ctrl.rb_is_rd, int'(store));
       expect_eq(op, "ra_is_rd", ctrl.ra_is_rd, int'(imm_arith));
