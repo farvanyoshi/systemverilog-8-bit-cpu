@@ -1,4 +1,4 @@
-; The full test program from "my isa test program.txt", in its original order,
+; The full test program from "logisim/my isa test program.txt", in its original order,
 ; with the encodings corrected for the fixed ISA.
 
 ; Subroutine test

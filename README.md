@@ -3,15 +3,15 @@
 An 8-bit CPU with 16-bit instructions, originally built in Logisim and
 reimplemented here in SystemVerilog.
 
-The Logisim design (`*.circ`) and the original notes and test programs (`*.txt`,
-`x86_test*`, `my_isa_test`) are kept in the repository root as the reference
-design. The SystemVerilog version fixes several bugs in it; see the end of
+The original Logisim design, notes and test programs are kept in `logisim/` as
+the reference design. The SystemVerilog version fixes several bugs in it; see the end of
 [docs/ISA.md](docs/ISA.md).
 
 ## Layout
 
 | Path        | Contents                                              |
 |-------------|-------------------------------------------------------|
+| `logisim/`  | Original Logisim design, notes and test programs      |
 | `docs/`     | ISA reference                                         |
 | `rtl/`      | SystemVerilog design (`cpu_top` is the top level)     |
 | `tb/`       | Unit testbenches and the program testbench `tb_cpu`   |
