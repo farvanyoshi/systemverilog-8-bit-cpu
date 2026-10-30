@@ -3,3 +3,4 @@ build/
 *.vcd
 *.fst
 __pycache__/
+abc.history
