@@ -1,5 +1,7 @@
 VERILATOR ?= verilator
 PYTHON    ?= python3
+SV2V      ?= sv2v
+YOSYS     ?= yosys
 
 BUILD := build
 
@@ -8,6 +10,10 @@ RTL := rtl/cpu_pkg.sv $(filter-out rtl/cpu_pkg.sv,$(sort $(wildcard rtl/*.sv)))
 
 # Top module for `make lint`.
 TOP ?= cpu_top
+
+# Top module for `make synth`. The core is synthesized without its memories:
+# an empty ROM would hold only HALT and optimize the whole CPU away.
+SYNTH_TOP ?= cpu_core
 
 # Programs are programs/<name>.asm, assembled into build/prog/.
 PROGRAMS := $(patsubst programs/%.asm,%,$(wildcard programs/*.asm))
@@ -18,7 +24,7 @@ UNIT_TESTS := $(patsubst tb/tb_%.sv,%,$(filter-out tb/tb_cpu.sv,$(wildcard tb/tb
 VFLAGS  := -Wall -Wno-DECLFILENAME --timing -Irtl
 TBFLAGS := $(VFLAGS) -Wno-UNUSEDPARAM -Wno-UNUSEDSIGNAL -Wno-WIDTH
 
-.PHONY: all lint test unit programs $(addprefix test-,$(UNIT_TESTS)) $(addprefix prog-,$(PROGRAMS)) sim wave clean
+.PHONY: all lint test unit programs $(addprefix test-,$(UNIT_TESTS)) $(addprefix prog-,$(PROGRAMS)) sim wave synth clean
 
 all: test
 
@@ -65,6 +71,17 @@ $(addprefix prog-,$(PROGRAMS)): prog-%: $(CPU_SIM) $(BUILD)/prog/%.hex $(BUILD)/
 $(BUILD)/prog/%.hex $(BUILD)/prog/%.exp: programs/%.asm tools/asm.py
 	@mkdir -p $(BUILD)/prog
 	$(PYTHON) tools/asm.py $< -o $(BUILD)/prog/$*.hex -e $(BUILD)/prog/$*.exp
+
+# Synthesis check: sv2v lowers the SystemVerilog to Verilog-2005 for Yosys's
+# built-in frontend, then a generic synth reports cell usage and fails on
+# structural problems (combinational loops, multiple drivers, undriven nets).
+$(BUILD)/cpu.v: $(RTL) | $(BUILD)
+	$(SV2V) $(RTL) -w $@
+
+synth: $(BUILD)/cpu.v
+	$(YOSYS) -q -l $(BUILD)/synth.log \
+		-p "read_verilog $<; synth -top $(SYNTH_TOP); check -assert; tee -o $(BUILD)/synth_$(SYNTH_TOP).txt stat"
+	@cat $(BUILD)/synth_$(SYNTH_TOP).txt
 
 $(BUILD):
 	mkdir -p $@
