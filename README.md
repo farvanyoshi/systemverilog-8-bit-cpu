@@ -4,8 +4,8 @@ An 8-bit CPU with 16-bit instructions, originally built in Logisim and
 reimplemented here in SystemVerilog.
 
 The original Logisim design, notes and test programs are kept in `logisim/` as
-the reference design. The SystemVerilog version fixes several bugs in it; see the end of
-[docs/ISA.md](docs/ISA.md).
+the reference design. The SystemVerilog version fixes several bugs in it; see
+the end of [docs/ISA.md](docs/ISA.md).
 
 ## Layout
 
