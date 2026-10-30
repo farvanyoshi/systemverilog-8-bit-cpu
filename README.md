@@ -21,9 +21,10 @@ the end of [docs/ISA.md](docs/ISA.md).
 ## Requirements
 
 Verilator 5, GNU Make, Python 3. GTKWave or Surfer to view waveforms.
+For `make synth`: Yosys and [sv2v](https://github.com/zachjs/sv2v).
 
 ```
-sudo dnf install verilator gtkwave
+sudo dnf install verilator gtkwave yosys
 ```
 
 ## Usage
@@ -35,7 +36,13 @@ make sim PROG=suite            # run programs/suite.asm and check its expectatio
 make sim PROG=suite TRACE=1    # ... printing each executed instruction
 make wave PROG=suite           # ... and writing build/suite.fst
 make sim HEX=path/to/image.hex # run a raw $readmemh image
+make synth                     # sv2v + Yosys synthesis check of cpu_core
 ```
+
+`make synth` synthesizes `cpu_core` to generic gates, prints the cell counts
+and fails on combinational loops, multiple drivers or undriven nets. Generic
+synthesis has no RAM cells, so the 256-entry return stack is built from
+flip-flops and accounts for most of the count.
 
 Programs declare their expected results with `.expect` lines, which the
 testbench checks after `HALT`:
